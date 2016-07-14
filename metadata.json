@@ -1,0 +1,18 @@
+{
+  "name": "dizzler-curator",
+  "version": "0.1.0",
+  "author": "dizzler",
+  "summary": "Installs Elastic's Curator, manages the curator.conf file, creates an action.yml file for the actions to be performed by a given Curator job, and adds Curator jobs to cron for scheduled management of Elasticsearch indices.",
+  "license": "Apache 2.0",
+  "source": "https://github.com/dizzler/curator",
+  "project_page": "https://github.com/dizzler/curator",
+  "issues_url": "https://github.com/dizzler/curator/issues",
+  "dependencies": [
+    { "name": "puppetlabs-stdlib", "version_requirement": ">= 1.0.0" },
+    { "name": "electrical-puppet-lib-file_concat", "version_requirement": ">= 1.1.1" },
+  ],
+  "operatingsystem_support": [
+    { "operatingsystem": "Ubuntu", "operatingsystemrelease": [ "14.04" ] },
+  ],
+  "tags": ["curator", "elasticsearch"],
+}

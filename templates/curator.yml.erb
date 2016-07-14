@@ -1,0 +1,23 @@
+---
+# Remember, leave a key empty if there is no value.  None will be a string,
+# not a Python "NoneType"
+client:
+  hosts: <%= @hosts -%>
+  port: <%= @port -%>
+  url_prefix: <% if @url_prefix != undef -%>@url_prefix<% end -%>
+  use_ssl: <% if @use_ssl == true -%>True<% else -%>False<% end -%>
+  certificate: <% if @certificate -%>@certificate<% end -%>
+  client_cert: <% if @client_cert -%>@client_cert<% end -%>
+  client_key: <% if @client_key -%>@client_key<% end -%>
+  aws_key: <% if @aws_key -%>@aws_key<% end -%>
+  aws_secret_key: <% if @aws_secret_key -%>@aws_secret_key<% end -%>
+  aws_region: <% if @aws_region -%>@aws_region<% end -%>
+  ssl_no_validate: <% if @ssl_no_validate == true -%>True<% else -%>False<% end -%>
+  http_auth: <% if @http_auth == true %>@http_user:@http_password<% end -%>
+  timeout: <%= @timeout -%>
+  master_only: <% if @master_only == true -%>True<% else -%>False<% end -%>
+
+logging:
+  loglevel: <%= @loglevel -%>
+  logfile: <%= @logfile -%>
+  logformat: <%= @logformat -%>
