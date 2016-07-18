@@ -9,7 +9,6 @@ class curator::params {
   $package_name = undef
   $manage_repo  = false
   $repo_version = undef
-  $config_dir = '/etc/curator'
 
   case $::osfamily {
     'Debian': {
@@ -26,9 +25,11 @@ class curator::params {
     }
   }
 
-  # Default path for Curator binary
-  $curator_bin = '/bin/curator'
+  # Defaults for Curator config, actions, and crontab
+  $config_dir   = '/etc/curator'
+  $config_user  = 'root',
+  $config_group = 'root',
 
-  # Defaults used for action files
-  $action_files = {'daily': [ ]}
+  # Default path for Curator binary
+  $bin_path = '/bin/curator'
 }

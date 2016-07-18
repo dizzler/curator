@@ -18,6 +18,7 @@
 class curator::config (
   $config_dir       = undef,
   $config_dir_purge = true,
+  $config_filename  = undef,
   $config_user      = root,
   $config_group     = root,
   $config_source    = undef,
@@ -48,8 +49,13 @@ class curator::config (
   include ::curator::params
 
   $curator_config_dir = $config_dir ? {
-    undef  => $::curator::params::config_dir,
+    undef   => $::curator::params::config_dir,
     default => $config_dir,
+  }
+
+  $curator_config_filename = $config_filename ? {
+    undef   => $::curator::params::config_filename,
+    default => $config_filename,
   }
 
   file { $curator_config_dir:
@@ -65,7 +71,7 @@ class curator::config (
     $config_content = template($config_template)
   }
 
-  file { "${curator_config_dir}/curator.yml":
+  file { "${curator_config_dir}/${curator_config_filename}":
     ensure  => file,
     content => $config_content,
     require => File["${curator_config_dir}"],

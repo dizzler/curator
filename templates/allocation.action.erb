@@ -1,0 +1,16 @@
+action: allocation
+<% if @description != undef -%>
+description: @description
+<% else -%>
+description: "Apply shard allocation filtering rules to the specified indices"
+<% end -%>
+options:
+  key: <%= @allocation_key -%>
+  value: <%= @allocation_value -%>
+  allocation_type: <% if @allocation_type != undef -%> @allocation_type <% end -%>
+  wait_for_completion: <% if @wait_for_completeion != undef -%> @wait_for_completion <% else -%>False<% end -%>
+  timeout_override: <% if @timeout_override != undef -%> @timeout_override <% end -%>
+  continue_if_exception: <% if @continue_if_exception == true -%>True<% else -%>False<% end -%>
+  disable_action: <% if @disable_action == true -%>True<% else -%>False<% end -%>
+filters:
+- filtertype: <% if @filter_none == true -%> None <% else -%> None <% end -%>

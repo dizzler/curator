@@ -28,11 +28,18 @@
 #  to download packages.
 #
 class curator (
-  $ensure       = $::curator::params::ensure,
-  $provider     = $::curator::params::provider,
-  $package_name = $::curator::params::package_name,
-  $manage_repo  = $::curator::params::manage_repo,
-  $repo_version = $::curator::params::repo_version,
+  $ensure          = $::curator::params::ensure,
+  $provider        = $::curator::params::provider,
+  $package_name    = $::curator::params::package_name,
+  $manage_repo     = $::curator::params::manage_repo,
+  $repo_version    = $::curator::params::repo_version,
+  $bin_path        = $::curator::params::bin_path,
+  $config_dir      = $::curator::params::config_dir,
+  $config_filename = $::curator::params::config_filename,
+  $config_user     = $::curator::params::config_user,
+  $config_group    = $::curator::params::config_group,
+  $curator_action_files    = hiera_hash(curator_action_files,{}),
+  #$curator_actions         = hiera_hash(curator_actions, {}),
 ) inherits curator::params
 {
   if ( $ensure != 'latest' ) or ( $ensure != 'absent' ) {
@@ -63,24 +70,23 @@ class curator (
   package { $curator_package_name:
     ensure   => $ensure,
     provider => $curator_provider,
+    before   => Class['::curator::config']
   }
 
   class { ::curator::config:
-    
+    config_dir   => $config_dir,
+    config_user  => $config_user,
+    config_group => $config_group,
   }
 
-  $actions = keys($curator_actions)
+  #validate_hash($curator_actions)
+  #create_resources('::curator::action', $curator_actions)
 
-  $actions.each |String $action| {
-    file_concat { "curator-${action_cron}-actionfile":
-      ensure => file,
-      tag    => "CURATOR_ACTION_${action_cron}_${::fqdn}",
-    }
+  validate_hash($curator_action_files)
+  $curator_action_file_defaults = {
+    config_dir => $config_dir,
+    user       => $config_user,
+    group      => $config_group,
   }
-
-######
-  validate_hash($curator_actions)
-
-  create_resources('::curator::action', $actions)
-
+  create_resources('::curator::action_file', $curator_action_files, $curator_action_file_defaults)
 }

@@ -4,16 +4,23 @@
 #
 # === Parameters
 #
+# [*cron_ensure*]
+#  Boolean. If false, creates action fragment for concatenation in action file,
+#  but does not schedule a cron job and instead runs curator command with
+#  '--dry-run' parameter, where output of dry-run simulation sent to logfile.
+#  If true, schedules a cronjob under the crontab of $cron_user, with frequency
+#  determined by $cron_{hour,minute,month,monthday,weekday} parameters.
+#  Default: false
+#
 # [*order*]
 # The order number controls in which sequence the action file fragments are
 # concatenated. REQUIRED.
 #
 ## Supply only one of either 'source' or 'template'.
 # [*source*]
-# Supply a Puppet file resource to be used as a file fragment for the action file.
+# String. Supply a Puppet file resource to be used as a file fragment for the
+# action file. 
 #
-# [*template*]
-# Supply an ERB template to be used as a file fragment for the action file.
 #
 # === Examples
 #
@@ -32,29 +39,86 @@
 # }
 #
 
-define curator::action(
-  $source              = undef,
-  $template            = undef,
-  $action              = undef,
-  $frequency           = 'daily',
-  $order               = undef,
-  $description         = undef,
-  # required parameters for specific actions
-  # requiring action(s) listed in trailing comment
-  $alias_name          = undef, #alias
-  $allocation_key      = undef, #allocation
-  $allocation_value    = undef, #allocation
-  $count               = undef, #replicas
-  $index_name          = undef, #create_index
-  $max_num_segments    = undef, #forcemerge
-  $snapshot_repository = undef, #delete_snapshots,restore,snapshot
-  # optional parameters for action settings
-  # associated actions listed in trailing comment
-  $allocation_type     = undef, #allocation
+define curator::action (
+  $action_file           = 'daily',
+  $cron_ensure           = undef,
+  $cron_hour             = 0,
+  $cron_minute           = 30,
+  $cron_month            = '*',
+  $cron_monthday         = '*',
+  $cron_weekday          = '*',
+  $cron_user             = 'root',
+  $order                 = undef,
+  # if $source is supplied, all parameters below $source will be ignored
+  $source                = undef,
+  $action                = undef,
+  $description           = undef,
+  # required parameters for specific actions and/or filtertypes
+  # associated action(s) listed in trailing comment
+  $alias_name            = undef, #alias
+  $allocation_key        = undef, #allocation
+  $allocation_value      = undef, #allocation
+  $count                 = undef, #replicas
+  $index_name            = undef, #create_index
+  $max_num_segments      = undef, #forcemerge,
+  $repository            = undef, #delete_snapshots,restore,snapshot
+  # optional parameters for ALL actions
+  $continue_if_exception = false,
+  $disable_action        = false,
+  $ignore_empty_list     = false, #not available for create_index action
+  $timeout_override      = undef,
+  # optional parameters for specific actions
+  # associated action(s) listed in trailing comment
+  $allocation_type       = undef, #allocation
+  $delay                 = undef, #forcemerge
+  $delete_aliases        = undef, #close
+  $extra_settings        = undef, #alias,create_index,
+  $ignore_unavailable    = false, #snapshot
+  $include_aliases       = false, #restore
+  $include_global_state  = true,  #snapshot
+  $partial               = false, #snapshot
+  $rename_pattern        = undef, #restore
+  $rename_replacement    = undef, #restore
+  $retry_count           = "3",   #delete_snapshots
+  $retry_interval        = "120", #delete_snapshots
+  $skip_repo_fs_check    = false, #snapshot
+  $snapshot_name         = undef, #snapshot
+  $wait_for_completion   = undef, #allocation(false),replicas(false),snapshot(true)
+  # filters to apply with this action; if no filter specified then fail
+  # if $filter_none is true, then this will override all other filters
+  # all other $filters_* expect a hash as input
+  #$filter_allocated     = undef,
+  #$filter_age           = undef,
+  #$filter_closed        = undef,
+  #$filter_forcemerged   = undef,
+  #$filter_kibana        = undef,
+  #$filter_opened        = undef,
+  #$filter_pattern       = undef,
+  #$filter_space         = undef,
+  #$filter_state         = undef,
+  $filter_none           = false, #set to true to override ANY and ALL other filters
+  $filter_1_enable       = false,
+  $filter_1              = {},
+  $filter_2_enable       = false,
+  $filter_2              = {},
+  $filter_3_enable       = false,
+  $filter_3              = {},
+  $filter_4_enable       = false,
+  $filter_4              = {},
+  $filter_5_enable       = false,
+  $filter_5              = {},
+  $filter_6_enable       = false,
+  $filter_6              = {},
+  $filter_7_enable       = false,
+  $filter_7              = {},
+  $filter_8_enable       = false,
+  $filter_8              = {},
+  $filter_9_enable       = false,
+  $filter_9              = {},
 ) {
-  # Allow use of custom source file or template. If not customized, an ERB
-  # template is chosen from this modules "templates" directory based on the
-  # value of the $action parameter.
+  # Allow use of custom source file to define the entire action and its filters.
+  # If not customized, an ERB template is chosen from this module's "templates"
+  # directory based on the value of the $action parameter.
   if ( $source != undef ) {
     $action_content = file($source)
   }
