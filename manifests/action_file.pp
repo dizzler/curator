@@ -34,7 +34,8 @@ define ::curator::action_file (
       group   => $group,
       mode    => '0644',
     }
-  else
+  }
+  else {
     file_concat { "curator_${name}_actionfile_concat":
       tag   => "CURATOR_ACTION_${name}_${::fqdn}",
       path  => "${curator_actionfile_name}",
@@ -47,7 +48,7 @@ define ::curator::action_file (
   if ( $cron_ensure != undef ) {
     cron { "curator_${name}_cron":
       ensure   => $cron_ensure,
-      command  => "${bin_file} --config ${curator_config_file} ${curator_actionfile_name} >/dev/null"
+      command  => "${bin_file} --config ${curator_config_file} ${curator_actionfile_name} >/dev/null",
       hour     => $cron_hour,
       minute   => $cron_minute,
       month    => $cron_month,

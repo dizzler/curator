@@ -24,22 +24,23 @@
 #  Default: 'false'
 #
 # [*repo_version*]
-#  String. Major version of Curator repository (e.g. '2', '3', '5') from which
+#  String. Major version of Curator repository (e.g. '2', '3', '4', '5') from which
 #  to download packages.
+#  Default: '4'
 #
 class curator (
-  $ensure          = $::curator::params::ensure,
-  $provider        = $::curator::params::provider,
-  $package_name    = $::curator::params::package_name,
-  $manage_repo     = $::curator::params::manage_repo,
-  $repo_version    = $::curator::params::repo_version,
-  $bin_path        = $::curator::params::bin_path,
-  $config_dir      = $::curator::params::config_dir,
-  $config_filename = $::curator::params::config_filename,
-  $config_user     = $::curator::params::config_user,
-  $config_group    = $::curator::params::config_group,
-  $curator_action_files    = hiera_hash(curator_action_files,{}),
-  #$curator_actions         = hiera_hash(curator_actions, {}),
+  $ensure               = $::curator::params::ensure,
+  $provider             = $::curator::params::provider,
+  $package_name         = $::curator::params::package_name,
+  $manage_repo          = $::curator::params::manage_repo,
+  $repo_version         = $::curator::params::repo_version,
+  $bin_path             = $::curator::params::bin_path,
+  $config_dir           = $::curator::params::config_dir,
+  $config_filename      = $::curator::params::config_filename,
+  $config_user          = $::curator::params::config_user,
+  $config_group         = $::curator::params::config_group,
+  $curator_action_files = hiera_hash(curator_action_files, {}),
+  #$curator_actions      = hiera_hash(curator_actions, {}),
 ) inherits curator::params
 {
   if ( $ensure != 'latest' ) or ( $ensure != 'absent' ) {
@@ -60,8 +61,25 @@ class curator (
       $curator_package_name = $_package_name
     }
 
-    unless ( $repo_version != undef ) and ( validate_bool($repo_version) ) {
-      fail('curator module cannot manage_repo if $repo_version is not specified as a string (e.g. "3")')
+    if ( $repo_version == undef ) {
+      fail('curator module requires a valid string for repo_version parameter, such as "4"')
+    }
+    else {
+      validate_string($repo_version)
+      case $repo_version {
+        '2','3': {
+          fail('curator module does not support repo versions prior to "4"')
+        }
+        '4': {
+          info('curator module using version "4" of elastic/curator repo for manage_repo')
+        }
+        '5': {
+          info('curator module using version "5" of elastic/curator repo for manage_repo')
+        }
+        default: {
+          fail('invalid repo_version supplied for manage_repo in curator module')
+        }
+      }
     }
 
     include Class['::curator::manage_repo'] -> Package["${curator_package_name}"]

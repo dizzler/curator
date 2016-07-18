@@ -36,9 +36,9 @@ class curator::config (
   $http_password    = undef,
   $timeout          = 30,
   $master_only      = true,
-  $loglevel         = 'INFO',
-  $logfile          = '/var/log/curator.log',
-  $logformat        = 'default',
+  $log_level        = 'INFO',
+  $log_file         = '/var/log/curator.log',
+  $log_format       = 'default',
 )  
 {
   File {

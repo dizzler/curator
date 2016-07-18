@@ -27,8 +27,8 @@ class curator::params {
 
   # Defaults for Curator config, actions, and crontab
   $config_dir   = '/etc/curator'
-  $config_user  = 'root',
-  $config_group = 'root',
+  $config_user  = 'root'
+  $config_group = 'root'
 
   # Default path for Curator binary
   $bin_path = '/bin/curator'

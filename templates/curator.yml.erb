@@ -18,6 +18,6 @@ client:
   master_only: <% if @master_only == true -%>True<% else -%>False<% end -%>
 
 logging:
-  loglevel: <%= @loglevel -%>
-  logfile: <%= @logfile -%>
-  logformat: <%= @logformat -%>
+  loglevel: <%= @log_level -%>
+  logfile: <%= @log_file -%>
+  logformat: <%= @log_format -%>
