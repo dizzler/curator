@@ -1,5 +1,5 @@
 #
-define ::curator::action_file (
+define curator::action_file (
   $content       = undef,
   $source        = undef,
   $cron_ensure   = undef,
@@ -8,15 +8,16 @@ define ::curator::action_file (
   $cron_month    = '*',
   $cron_monthday = '*',
   $cron_weekday  = '*',
-  $user          = 'root',
-  $group         = 'root',
+  $user          = $::curator::params::config_user,
+  $group         = $::curator::params::config_group,
+  $bin_path      = $::curator::params::_bin_path,
 )
 {
   include ::curator::config
 
-  $curator_config_path     = "${curator::config::curator_config_dir}/${curator::config::curator_config_filename}"
-  $curator_actions_dir     = "${curator::config::curator_config_dir}/actions.d"
-  $curator_actionfile_name = "${curator_actions_dir}/${name}"
+  $curator_config_path     = "${curator::config::curator_config_path}"
+  $curator_actions_dir     = "${curator::config::curator_actions_dir}"
+  $curator_actionfile_name = "${curator_actions_dir}/${name}.action.yml"
 
   if ( $content != undef ) or ( $source != undef ) {
     if ( $content != undef ) {
@@ -48,7 +49,7 @@ define ::curator::action_file (
   if ( $cron_ensure != undef ) {
     cron { "curator_${name}_cron":
       ensure   => $cron_ensure,
-      command  => "${bin_file} --config ${curator_config_file} ${curator_actionfile_name} >/dev/null",
+      command  => "${bin_path} --config ${curator_config_path} ${curator_actionfile_name} >/dev/null",
       hour     => $cron_hour,
       minute   => $cron_minute,
       month    => $cron_month,

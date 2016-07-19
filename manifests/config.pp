@@ -58,11 +58,8 @@ class curator::config (
     default => $config_filename,
   }
 
-  file { $curator_config_dir:
-    ensure  => directory,
-    purge   => $config_dir_purge,
-    recurse => $config_dir_purge,
-  }
+  $curator_config_path = "${curator_config_dir}/${curator_config_filename}"
+  $curator_actions_dir = "${curator_config_dir}/actions.d"
 
   if ( $config_source != undef ) {
     $config_content = file($config_source)
@@ -71,9 +68,23 @@ class curator::config (
     $config_content = template($config_template)
   }
 
-  file { "${curator_config_dir}/${curator_config_filename}":
+  file { $curator_config_dir:
+    ensure       => directory,
+    purge        => $config_dir_purge,
+    recurse      => $config_dir_purge,
+    recurselimit => 1,
+  }
+
+  file { $curator_config_path:
     ensure  => file,
     content => $config_content,
+    require => File["${curator_config_dir}"],
+  }
+
+  file { $curator_actions_dir:
+    ensure  => directory,
+    purge   => $config_dir_purge,
+    recurse => $config_dir_purge,
     require => File["${curator_config_dir}"],
   }
 }

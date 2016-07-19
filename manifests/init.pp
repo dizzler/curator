@@ -49,18 +49,26 @@ class curator (
     }
   }
 
+  if ( $provider != undef ) {
+    $curator_provider     = $provider
+    $curator_package_name = $package_name ? {
+      undef   => $_package_name,
+      default => $package_name,
+    }
+  }
+  else {
+    $curator_provider     = $_provider
+    $curator_package_name = $_package_name
+  }
+
+  $curator_bin_path = $bin_path ? {
+    undef   => $_bin_path,
+    default => $bin_path,
+  }
+
   validate_bool($manage_repo)
 
   if ( $manage_repo == true ) {
-    if ( $provider != undef ) and ( $package_name != undef ) {
-      $curator_provider     = $provider
-      $curator_package_name = $package_name
-    }
-    else {
-      $curator_provider     = $_provider
-      $curator_package_name = $_package_name
-    }
-
     if ( $repo_version == undef ) {
       fail('curator module requires a valid string for repo_version parameter, such as "4"')
     }
@@ -102,9 +110,9 @@ class curator (
 
   validate_hash($curator_action_files)
   $curator_action_file_defaults = {
-    config_dir => $config_dir,
-    user       => $config_user,
-    group      => $config_group,
+    user     => $config_user,
+    group    => $config_group,
+    bin_path => $curator_bin_path,
   }
-  create_resources('::curator::action_file', $curator_action_files, $curator_action_file_defaults)
+  create_resources('curator::action_file', $curator_action_files, $curator_action_file_defaults)
 }
