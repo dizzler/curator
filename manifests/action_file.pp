@@ -1,3 +1,26 @@
+# == Define: curator::action_file
+#
+# Creates an Action File for Curator to manage Elasticsearch indices.
+#
+# Note: Prior to Curator version 3.0.0, the following 'Order of Operations' was
+#       enforced to prevent operations from colliding:
+#           delete -> close -> forcemerge
+#       While the Action File format for version 4.0.0+ promises to execute
+#       actions in the order listed, it is still wise to follow the above order
+#       when creating a series of actions.
+#
+# === Parameters
+#
+# [*content*]
+#  Hash. Provide content for entire action file as a single hash. Useful with
+#  Hiera, such that a single Hiera key can set all paramters used in this
+#  define, where the top-level key would be the $title or $name of this define,
+#  "content:" would be a second-level key, and the entirety of the action file
+#  would be nested as the value of "content:". If both $content and $source
+#  are provided, only $content is used.
+#
+# [*source*]
+#  String. Provide a source file to be used as action file.
 #
 define curator::action_file (
   $content       = undef,

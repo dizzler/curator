@@ -99,7 +99,7 @@ class curator (
     before   => Class['::curator::config']
   }
 
-  class { ::curator::config:
+  class { '::curator::config':
     config_dir   => $config_dir,
     config_user  => $config_user,
     config_group => $config_group,
